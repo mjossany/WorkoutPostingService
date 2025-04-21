@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/mjossany/workoutPostingService/internal/app"
+	"github.com/mjossany/workoutPostingService/internal/routes"
 )
 
 func main() {
@@ -19,12 +20,13 @@ func main() {
 		panic(err)
 	}
 
-	http.HandleFunc("/health", HealthCheck)
+	r := routes.SetupRoutes(app)
 	server := &http.Server{
 		Addr:         fmt.Sprintf(":%d", port),
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 30 * time.Second,
+		Handler:      r,
 	}
 
 	app.Logger.Printf("we are running on port %d\n", port)
@@ -33,8 +35,4 @@ func main() {
 	if err != nil {
 		app.Logger.Fatal(err)
 	}
-}
-
-func HealthCheck(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Status is available\n")
 }
