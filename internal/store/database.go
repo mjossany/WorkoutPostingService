@@ -31,7 +31,7 @@ func MigrateFS(db *sql.DB, migrationsFS fs.FS, dir string) error {
 func Migrate(db *sql.DB, dir string) error {
 	err := goose.SetDialect("postgres")
 	if err != nil {
-		fmt.Errorf("migrate: %w", err)
+		return fmt.Errorf("migrate: %w", err)
 	}
 	err = goose.Up(db, dir)
 	if err != nil {
