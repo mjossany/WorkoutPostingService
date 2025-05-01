@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/mjossany/workoutPostingService/internal/middleware"
+
 	"github.com/mjossany/workoutPostingService/internal/api"
 	"github.com/mjossany/workoutPostingService/internal/store"
 	"github.com/mjossany/workoutPostingService/migrations"
@@ -17,6 +19,7 @@ type Application struct {
 	WorkoutHandler *api.WorkoutHandler
 	UserHandler    *api.UserHandler
 	TokenHandler   *api.TokenHandler
+	Middleware     middleware.UserMiddleware
 	DB             *sql.DB
 }
 
@@ -36,6 +39,7 @@ func NewApplication() (*Application, error) {
 	workoutStore := store.NewPostgresWorkoutStore(pgDB)
 	userStore := store.NewPostgresUserStore(pgDB)
 	tokenStore := store.NewPostgresTokenStore(pgDB)
+	middlewareHandler := middleware.UserMiddleware{UserStore: userStore}
 
 	workoutHandler := api.NewWorkoutHandler(workoutStore, logger)
 	userHandler := api.NewUserHandler(userStore, logger)
@@ -46,6 +50,7 @@ func NewApplication() (*Application, error) {
 		WorkoutHandler: workoutHandler,
 		UserHandler:    userHandler,
 		TokenHandler:   tokenHandler,
+		Middleware:     middlewareHandler,
 		DB:             pgDB,
 	}
 
